@@ -162,7 +162,8 @@ def read_config() -> bt.config:
         default=False,
     )
 
-    bt.wallet.add_args(parser, prefix="storage.")
+    # TODO: setup storage wallet
+    # bt.wallet.add_args(parser, prefix="storage.")
     # Wallet used for contacting the storage subnet.
 
     parser.add_argument("--storage.netuid", type=int, help="Storage subnet netuid", default=22)

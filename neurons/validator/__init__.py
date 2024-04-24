@@ -137,7 +137,7 @@ class Validator:
         self.state = ValidatorState(miners=self.miners)
         self.state.load(self.config.neuron.full_path / "state.pt")
 
-        # TODO: add
+        # TODO: only if enabled
         self.keeper = Keeper(config)
 
     def generate(self, synapse: Generate) -> Generate:

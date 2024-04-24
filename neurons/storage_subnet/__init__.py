@@ -17,8 +17,12 @@ class Keeper:
         self.metagraph = bt.metagraph(netuid=self.config.storage.netuid, network=self.subtensor.network, sync=False)
         self.metagraph.sync(subtensor=self.subtensor)
 
+        # self.wallet = bt.wallet(
+        #     name=config.storage.wallet.name, hotkey=config.storage.wallet.hotkey, path=config.storage.wallet.path
+        # )
+
         self.wallet = bt.wallet(
-            name=config.storage.wallet.name, hotkey=config.storage.wallet.hotkey, path=config.storage.wallet.path
+            name="test.validator", hotkey="default"
         )
 
         # TODO: add periodic resync in case of validator migration
