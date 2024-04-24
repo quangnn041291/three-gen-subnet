@@ -11,6 +11,7 @@ from bittensor.utils import weight_utils
 from common import create_neuron_dir
 from common.protocol import Feedback, PullTask, SubmitResults, Task
 from common.version import NEURONS_VERSION
+from storage_subnet import Keeper, StoredData
 from substrateinterface import Keypair
 
 from validator.dataset import Dataset
@@ -51,6 +52,8 @@ class Validator:
     """Simple wrapper to encapsulate validator state save and load."""
     public_api_limiter: RateLimiter
     """Rate limiter for organic requests."""
+    keeper: Keeper
+    """Used to stora assets on storage subnet."""
 
     def __init__(self, config: bt.config) -> None:
         self.config: bt.config = copy.deepcopy(config)
@@ -133,6 +136,9 @@ class Validator:
         self.miners = [MinerData(uid=x) for x in range(NEURONS_LIMIT)]
         self.state = ValidatorState(miners=self.miners)
         self.state.load(self.config.neuron.full_path / "state.pt")
+
+        # TODO: add
+        self.keeper = Keeper(config)
 
     def generate(self, synapse: Generate) -> Generate:
         """Public API. Generation request."""
@@ -258,6 +264,9 @@ class Validator:
 
         miner.reset_task(cooldown=self.config.generation.task_cooldown)
 
+        # TODO: store only accepted results
+        asyncio.create_task(self.keeper.store(StoredData.from_results(synapse)))
+
         if fidelity_score == 0:
             bt.logging.debug(f"[{uid}] submitted results with low fidelity score. Results not accepted")
             return self._add_feedback(synapse, miner)
@@ -270,13 +279,6 @@ class Validator:
         )
 
         self.task_registry.complete_task(synapse.task.id, synapse.dendrite.hotkey, synapse.results, validation_score)
-
-        # TODO: store results
-        # Add a separate queue to store results in case of rate limit or low bandwidth.
-        # Use this miner hotkey to access storage API
-        #   Try same validator first. Then try other validators.
-        #   Config this ^
-        # Store all cids.
 
         return self._add_feedback(synapse, miner, current_time=current_time, fidelity_score=fidelity_score)
 
