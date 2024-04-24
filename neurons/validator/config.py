@@ -162,13 +162,6 @@ def read_config() -> bt.config:
         default=False,
     )
 
-    parser.add_argument(
-        "--storage.enable",
-        action="store_true",
-        help="If enabled, generated assets are stored on bittensor storage subnet (SN21).",
-        default=False,
-    )
-
     bt.wallet.add_args(parser, prefix="storage.")
     # Wallet used for contacting the storage subnet.
 
