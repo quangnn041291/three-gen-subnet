@@ -307,8 +307,8 @@ class Validator:
             return False
 
         keypair = Keypair(ss58_address=synapse.dendrite.hotkey)
-        message = f"{synapse.nonce}{synapse.task.prompt}{synapse.axon.hotkey}{synapse.dendrite.hotkey}"
-        return bool(keypair.verify(message, base64.b64decode(synapse.signature)))
+        message = f"{synapse.submit_time}{synapse.task.prompt}{synapse.axon.hotkey}{synapse.dendrite.hotkey}"
+        return bool(keypair.verify(message, base64.b64decode(synapse.signature.encode(encoding="utf-8"))))
 
     @staticmethod
     def _get_fidelity_score(validation_score: float) -> float:
