@@ -84,9 +84,9 @@ class TextTo3DModelValidator:
             img = Image.fromarray(img)
             rendered_images.append(img)
 
-        if save_images:
+        if True:
             for j, im in enumerate(rendered_images):
-                im.save(os.path.curdir + "/images/img" + str(j) + "_" + str(i) + ".png")
+                im.save(os.path.curdir + "/images/img" + str(j) + ".png")
 
         score = self._score_images(rendered_images, prompt)
 
@@ -115,6 +115,9 @@ class TextTo3DModelValidator:
             dists.append(probs[0][-1])
 
         dists = np.sort(dists)
+
+        print(f"[DEBUG] score points: {dists}")
+
         count_false_detection = np.sum(dists < self.__false_neg_thres)
         if count_false_detection < len(dists):
             dists = dists[dists > self.__false_neg_thres]
